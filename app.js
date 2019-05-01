@@ -8,6 +8,7 @@ let logger = require('morgan');
 let config = require('./config/config');
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/authRouter');
+let postsRouter = require('./routes/postsRouter');
 let app = express();
 mongoose.Promise = global.Promise;
 mongoose.connect(config.dburl, { useNewUrlParser: true });
@@ -31,6 +32,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api/chatapp', usersRouter);
+app.use('/api/chatapp', postsRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

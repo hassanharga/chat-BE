@@ -46,9 +46,7 @@ module.exports = {
         password: hash
       }
       User.create(body).then(user => {
-        let token = jwt.sign({ data: user }, config.secret, { //create token
-          expiresIn: "1h"
-        });
+        let token = jwt.sign({ data: user }, config.secret);
         res.cookie("token", token);
         res.status(httpStatus.CREATED).json({ message: "user created successfully", user, token });
       }).catch(err => {
@@ -73,9 +71,7 @@ module.exports = {
                 res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'password is incorrect' });
               }
               else {
-                let token = jwt.sign({ data: user }, config.secret, {
-                  expiresIn: "1h"
-                })
+                let token = jwt.sign({ data: user }, config.secret)
                 res.cookie("token", token);
                 res.status(httpStatus.OK).json({ message: 'Login sucessful', user, token });
               }
