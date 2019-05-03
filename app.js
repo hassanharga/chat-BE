@@ -17,6 +17,8 @@ mongoose.connect(config.dburl, { useNewUrlParser: true });
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(cors());
+let server = require('http').createServer(app);
+let io = require('socket.io').listen(server);
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Credentials", "true");
@@ -30,6 +32,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+require('./socket/streams')(io);
 app.use('/', indexRouter);
 app.use('/api/chatapp', usersRouter);
 app.use('/api/chatapp', postsRouter);
@@ -51,7 +54,7 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 let port = process.env.port || 8080;
-app.listen(port, () => {
+server.listen(port, () => {
   console.log("server is listening at " + port);
 });
 module.exports = app;
