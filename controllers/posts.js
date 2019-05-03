@@ -38,13 +38,40 @@ module.exports = {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error Creating Post' });
         });
     },
+
     async getAllPosts(req, res) {
         try {
-            const posts = await postSchema.find({user: req.user._id}).populate('user').sort({ created: -1 });
+            const posts = await postSchema.find({ user: req.user._id }).populate('user').sort({ created: -1 });
             // console.log(posts);
             return res.status(httpStatus.OK).json({ message: 'all posts', posts });
         } catch (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error Fetching Posts' });
         }
+    },
+
+    async addLike(req, res) {
+        const postId = req.body._id;
+        await postSchema.update(
+            {
+                _id: postId,
+                'likes.username': {$ne: req.user.username}
+            },
+            {
+                $push: {
+                    likes: {
+                        username: req.user.username
+                    }
+                },
+                $inc: {
+                    totalLikes: 1
+                }
+            }
+        )
+        .then(() =>{
+            res.status(httpStatus.OK).json({message: 'you liked the post'});
+        })
+        .catch(err =>{
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error Adding Like To The Post' });
+        });
     }
 }
