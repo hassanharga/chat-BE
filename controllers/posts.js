@@ -73,5 +73,43 @@ module.exports = {
         .catch(err =>{
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error Adding Like To The Post' });
         });
+    },
+
+    async addComment(req, res) {
+        // console.log(req.body);
+        const postId = req.body.postId;
+        await postSchema.update(
+            {
+                _id: postId
+            },
+            {
+                $push: {
+                    comments: {
+                        userId: req.user._id,
+                        username: req.user.username,
+                        comment: req.body.comment,
+                        createdAt: new Date()
+                    }
+                }
+            }
+        )
+        .then(() =>{
+            res.status(httpStatus.OK).json({message: 'you commented on the post'});
+        })
+        .catch(err =>{
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error Adding comment To The Post' });
+        });
+    },
+
+    async getPost(req,res) {
+     await postSchema.findOne({_id: req.params.id})
+        .populate('user')
+        .populate('comments.userId')
+        .then(post => {
+            res.status(httpStatus.OK).json({message: 'post found', post});
+        })
+        .catch(err => {
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'post not found' });
+        });
     }
 }
