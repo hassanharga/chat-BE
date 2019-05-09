@@ -7,8 +7,10 @@ let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let config = require('./config/config');
 let indexRouter = require('./routes/index');
-let usersRouter = require('./routes/authRouter');
+let authRouter = require('./routes/authRouter');
+let userRouter = require('./routes/userRouter');
 let postsRouter = require('./routes/postsRouter');
+let friendsRouter = require('./routes/friendsRouter');
 let app = express();
 mongoose.Promise = global.Promise;
 mongoose.connect(config.dburl, { useNewUrlParser: true });
@@ -34,8 +36,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 require('./socket/streams')(io);
 app.use('/', indexRouter);
-app.use('/api/chatapp', usersRouter);
+app.use('/api/chatapp', authRouter);
 app.use('/api/chatapp', postsRouter);
+app.use('/api/chatapp', userRouter);
+app.use('/api/chatapp', friendsRouter);
 
 
 // catch 404 and forward to error handler
