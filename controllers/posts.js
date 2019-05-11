@@ -41,9 +41,14 @@ module.exports = {
 
     async getAllPosts(req, res) {
         try {
-            const posts = await postSchema.find({ user: req.user._id }).populate('user').sort({ created: -1 });
+            const posts = await postSchema.find()
+                .populate('user')
+                .sort({ created: -1 }); //{ user: req.user._id }
+            const topPosts = await postSchema.find({ totalLikes: { $gte: 2 } })
+                .populate('user')
+                .sort({ created: -1 });
             // console.log(posts);
-            return res.status(httpStatus.OK).json({ message: 'all posts', posts });
+            return res.status(httpStatus.OK).json({ message: 'all posts', posts, topPosts });
         } catch (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error Fetching Posts' });
         }
@@ -54,7 +59,7 @@ module.exports = {
         await postSchema.update(
             {
                 _id: postId,
-                'likes.username': {$ne: req.user.username}
+                'likes.username': { $ne: req.user.username }
             },
             {
                 $push: {
@@ -67,12 +72,12 @@ module.exports = {
                 }
             }
         )
-        .then(() =>{
-            res.status(httpStatus.OK).json({message: 'you liked the post'});
-        })
-        .catch(err =>{
-            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error Adding Like To The Post' });
-        });
+            .then(() => {
+                res.status(httpStatus.OK).json({ message: 'you liked the post' });
+            })
+            .catch(err => {
+                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error Adding Like To The Post' });
+            });
     },
 
     async addComment(req, res) {
@@ -93,23 +98,23 @@ module.exports = {
                 }
             }
         )
-        .then(() =>{
-            res.status(httpStatus.OK).json({message: 'you commented on the post'});
-        })
-        .catch(err =>{
-            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error Adding comment To The Post' });
-        });
+            .then(() => {
+                res.status(httpStatus.OK).json({ message: 'you commented on the post' });
+            })
+            .catch(err => {
+                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error Adding comment To The Post' });
+            });
     },
 
-    async getPost(req,res) {
-     await postSchema.findOne({_id: req.params.id})
-        .populate('user')
-        .populate('comments.userId')
-        .then(post => {
-            res.status(httpStatus.OK).json({message: 'post found', post});
-        })
-        .catch(err => {
-            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'post not found' });
-        });
+    async getPost(req, res) {
+        await postSchema.findOne({ _id: req.params.id })
+            .populate('user')
+            .populate('comments.userId')
+            .then(post => {
+                res.status(httpStatus.OK).json({ message: 'post found', post });
+            })
+            .catch(err => {
+                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'post not found' });
+            });
     }
 }

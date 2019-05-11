@@ -34,7 +34,7 @@ module.exports = {
                         notifications: {
                             senderId: req.user._id,
                             message: `${req.user.username} is now following you`,
-                            
+                            created: new Date()
                         }
                     }
                 }
@@ -123,5 +123,23 @@ module.exports = {
                res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'error marking notification' });
            })
         }
+    },
+
+    async markAllNotification(req,res) {
+        await User.update(
+            {
+                _id: req.user._id,
+            },
+            {
+                $set: {
+                    'notifications.$[elem].read': true
+                }
+            },
+            {arrayFilters: [{'elem.read': false}], multi: true}
+            ).then(()=> {
+                 res.status(httpStatus.OK).json({ message: 'all notifications marked as read' });
+            }).catch(()=>{
+                res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'error marking notifications' });
+            })
     }
 }
