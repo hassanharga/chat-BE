@@ -23,6 +23,12 @@ userSchema = mongoose.Schema({
       read: {type: Boolean, default: false},
       date: {type: String, default: ''}
     }
+  ],
+  chatList: [
+    {
+      receiverId: {type: mongoose.Schema.Types.ObjectId, ref : 'users'},
+      msgId: {type: mongoose.Schema.Types.ObjectId, ref : 'message'},
+    }
   ]
 });
  module.exports=mongoose.model("users",userSchema);

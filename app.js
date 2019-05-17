@@ -11,6 +11,7 @@ let authRouter = require('./routes/authRouter');
 let userRouter = require('./routes/userRouter');
 let postsRouter = require('./routes/postsRouter');
 let friendsRouter = require('./routes/friendsRouter');
+let messageRouter = require('./routes/messageRouter');
 let app = express();
 mongoose.Promise = global.Promise;
 mongoose.connect(config.dburl, { useNewUrlParser: true });
@@ -40,6 +41,7 @@ app.use('/api/chatapp', authRouter);
 app.use('/api/chatapp', postsRouter);
 app.use('/api/chatapp', userRouter);
 app.use('/api/chatapp', friendsRouter);
+app.use('/api/chatapp', messageRouter);
 
 
 // catch 404 and forward to error handler
