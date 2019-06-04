@@ -9,7 +9,7 @@ let messageSchema = mongoose.Schema({
         {
             senderId: {type: mongoose.Schema.Types.ObjectId, ref: "users"},
             receiverId: {type: mongoose.Schema.Types.ObjectId, ref: "users"},
-            sernderName:{type: String},
+            senderName:{type: String},
             receiverName: {type: String},
             body: {type: String, default: ''},
             isRead : {type: Boolean, default: false},

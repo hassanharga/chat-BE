@@ -49,7 +49,7 @@ module.exports = {
                             message: {
                                 senderId: req.user._id,
                                 receiverId: req.params.receiver_Id,
-                                sernderName: req.user.username,
+                                senderName: req.user.username,
                                 receiverName: req.body.receiverName,
                                 body: req.body.message,
                             }
@@ -77,7 +77,7 @@ module.exports = {
                     newMessage.message.push({
                         senderId: req.user._id,
                         receiverId: req.params.receiver_Id,
-                        sernderName: req.user.username,
+                        senderName: req.user.username,
                         receiverName: req.body.receiverName,
                         body: req.body.message,
                     });

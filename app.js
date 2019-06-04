@@ -36,6 +36,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 require('./socket/streams')(io);
+require('./socket/private')(io);
 app.use('/', indexRouter);
 app.use('/api/chatapp', authRouter);
 app.use('/api/chatapp', postsRouter);
