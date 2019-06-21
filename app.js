@@ -16,27 +16,28 @@ let app = express();
 mongoose.Promise = global.Promise;
 mongoose.connect(config.dburl, { useNewUrlParser: true });
 
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(cors());
 let server = require('http').createServer(app);
 let io = require('socket.io').listen(server);
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET", "POST", "DELETE", "PUT", "OPTOPNS");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  next();
-});
+require('./socket/streams')(io);
+require('./socket/private')(io);
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Credentials", "true");
+//   res.header("Access-Control-Allow-Methods", "GET", "POST", "DELETE", "PUT", "OPTOPNS");
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+//   next();
+// });
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-require('./socket/streams')(io);
-require('./socket/private')(io);
 app.use('/', indexRouter);
 app.use('/api/chatapp', authRouter);
 app.use('/api/chatapp', postsRouter);
