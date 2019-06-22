@@ -125,5 +125,57 @@ module.exports = {
                         });
                 }
             })
+    },
+    async markReceiverMessages(req, res) {
+        // console.log(req.params);
+        const { sender, receiver} = req.params;
+        const msg = await Message.aggregate([
+            {$unwind: '$message'},
+            {
+                $match: {
+                    $and: [{'message.senderName': receiver},{'message.receiverName': sender}]
+                }
+        }
+        ]);
+        if(msg.length > 0) {
+            try {
+                msg.forEach(async value => {
+                    await Message.update(
+                        {
+                            'message._id': value.message._id
+                        },
+                        {$set: { 'message.$.isRead': true }}
+                    )
+                })
+                res.status(httpStatus.OK).json({message: 'message marked as read'});
+            } catch (err) {
+                res.status(httpStatus.INTERNAL_SERVER_ERROR).json({message: 'error occured'});
+            }
+        }
+        // console.log(msg);
+    },
+    async markAllMessages(req,res) {
+        const { sender, receiver} = req.params;
+        const msg = await Message.aggregate([
+            {$match: {'message.receiverName': req.user.username}},
+            {$unwind: '$message'},
+            {$match: {'message.receiverName': req.user.username}},
+        ]);
+        // console.log(msg);
+        if(msg.length > 0) {
+            try {
+                msg.forEach(async value => {
+                    await Message.update(
+                        {
+                            'message._id': value.message._id
+                        },
+                        {$set: { 'message.$.isRead': true }}
+                    )
+                })
+                res.status(httpStatus.OK).json({message: 'all messages marked as read'});
+            } catch (err) {
+                res.status(httpStatus.INTERNAL_SERVER_ERROR).json({message: 'error occured'});
+            }
+        }
     }
 }
