@@ -22,7 +22,10 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(cors());
 let server = require('http').createServer(app);
-let io = require('socket.io').listen(server);
+let io = require('socket.io').listen(server); 
+
+const {User} = require('./Helpers/userClass');
+ 
 require('./socket/streams')(io);
 require('./socket/private')(io);
 // app.use(function (req, res, next) {
