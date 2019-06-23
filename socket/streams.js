@@ -1,9 +1,26 @@
-module.exports = function (io) {
+// let user = require('../Helpers/userClass');
+module.exports = function (io, User, _) {
+    const userData = new User();
     io.on('connection', socket => {
         socket.on('refresh', data => {
             io.emit('refreshPage',{});
-            // console.log(data);
+        });
+
+        socket.on('online', data => {
+            socket.join(data.room);
+            userData.enterRoom (socket.id, data.name, data.room);
+            const list = userData.getList(data.room);
+            io.emit('usersOnline', _.uniq(list));
+        });
+        socket.on('disconnect', () => {
+            const user = userData.removeUser(socket.id);
+            if(user) {
+                const userArray = userData.getList(user.room);
+                const arr = _.uniq(userArray);
+                _.remove(arr, n => n === user.name);
+                io.emit('usersOnline', arr);
+            }
+            // console.log(user);
         })
-        // console.log('user connected');
     });
 }

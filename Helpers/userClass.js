@@ -24,3 +24,5 @@ class User {
         return names;
     }
 }
+
+module.exports = {User};

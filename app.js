@@ -12,6 +12,7 @@ let userRouter = require('./routes/userRouter');
 let postsRouter = require('./routes/postsRouter');
 let friendsRouter = require('./routes/friendsRouter');
 let messageRouter = require('./routes/messageRouter');
+let _ = require('lodash');
 let app = express();
 mongoose.Promise = global.Promise;
 mongoose.connect(config.dburl, { useNewUrlParser: true });
@@ -26,7 +27,7 @@ let io = require('socket.io').listen(server);
 
 const {User} = require('./Helpers/userClass');
  
-require('./socket/streams')(io);
+require('./socket/streams')(io,User, _);
 require('./socket/private')(io);
 // app.use(function (req, res, next) {
 //   res.header("Access-Control-Allow-Origin", "*");
