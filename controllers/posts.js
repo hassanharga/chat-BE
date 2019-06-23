@@ -1,4 +1,4 @@
-let Joi = require("Joi");
+let Joi = require("joi");
 let httpStatus = require("http-status-codes");
 let postSchema = require('../models/postModel');
 let User = require("../models/userModel");
