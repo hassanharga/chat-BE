@@ -12,6 +12,7 @@ let userRouter = require('./routes/userRouter');
 let postsRouter = require('./routes/postsRouter');
 let friendsRouter = require('./routes/friendsRouter');
 let messageRouter = require('./routes/messageRouter');
+let imageRouter = require('./routes/imageRouter');
 let _ = require('lodash');
 let app = express();
 mongoose.Promise = global.Promise;
@@ -37,8 +38,8 @@ require('./socket/private')(io);
 //   next();
 // });
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true , limit: '50mb'}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -48,6 +49,7 @@ app.use('/api/chatapp', postsRouter);
 app.use('/api/chatapp', userRouter);
 app.use('/api/chatapp', friendsRouter);
 app.use('/api/chatapp', messageRouter);
+app.use('/api/chatapp', imageRouter);
 
 
 // catch 404 and forward to error handler
