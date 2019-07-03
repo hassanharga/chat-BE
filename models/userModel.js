@@ -1,4 +1,6 @@
 let mongoose = require("mongoose");
+let bcrypt = require('bcryptjs');
+
 userSchema = mongoose.Schema({
   username: { type: String },
   email: { type: String },
@@ -39,4 +41,10 @@ userSchema = mongoose.Schema({
     }
   ]
 });
- module.exports=mongoose.model("users",userSchema);
+
+userSchema.statics.EncrypytPassword = async (password) => {
+  const hash = bcrypt.hash(password, 10);
+  return hash;
+}
+
+module.exports=mongoose.model("users",userSchema);

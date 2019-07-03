@@ -7,6 +7,7 @@ router.get('/users', AuthHelper.authenticate, userCtrl.getAllUsers);
 router.get('/user/:id', AuthHelper.authenticate, userCtrl.getByUserId);
 router.get('/username/:username', AuthHelper.authenticate, userCtrl.getByUsername);
 router.post('/user/view-profile', AuthHelper.authenticate, userCtrl.profileView);
+router.post('/user/change-password', AuthHelper.authenticate, userCtrl.changePassword);
 
 
 module.exports = router;

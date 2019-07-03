@@ -1,7 +1,8 @@
 let User = require('../models/userModel');
 let moment = require('moment');
 let httpStatus = require('http-status-codes');
-
+let joi = require('joi');
+let bcrypt = require('bcryptjs');
 
 module.exports = {
     async getAllUsers(req, res) {
@@ -55,6 +56,43 @@ module.exports = {
             }).catch(err => {
                 res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "notification error"});
             });
+        // console.log(req.body);
+    },
+
+    async changePassword(req,res) {
+        const schema = joi.object().keys({
+            cpassword: joi.string().required(),
+            newPassword: joi.string().min(5).required(),
+            confirmPassword: joi.string().min(5).optional(),
+        });
+        const {err, value} = joi.validate(req.body, schema);
+        if (err && err.details) {
+            return res.status(httpStatus.BAD_REQUEST).json({ message: error.details });  
+        }
+        // console.log(value);
+        const user = await User.findOne({_id: req.user._id});
+        return bcrypt.compare(value.cpassword, user.password)
+            .then(async result => {
+                if (!result) {
+                    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'current password is incorrect' });
+                }
+                const newpassword = await User.EncrypytPassword(req.body.newPassword);
+                await User.update({_id: req.user._id}, {password: newpassword})
+                .then(user => {
+                    res.status(httpStatus.OK).json({ message: "password Updated" });
+                }).catch(err => {
+                    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "error updating password"});
+                });
+                // console.log(newpassword);
+                // else {
+                //     let token = jwt.sign({ data: user }, config.secret)
+                //     res.cookie("token", token);
+                //     res.status(httpStatus.OK).json({ message: 'Login sucessful', user, token });
+                // }
+            })
+            .catch(error => {
+                res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'error finding user' });
+            })
         // console.log(req.body);
     }
 
