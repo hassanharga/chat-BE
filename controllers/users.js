@@ -75,14 +75,15 @@ module.exports = {
             .then(async result => {
                 if (!result) {
                     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'current password is incorrect' });
+                } else {
+                    const newpassword = await User.EncrypytPassword(req.body.newPassword);
+                    await User.update({_id: req.user._id}, {password: newpassword})
+                    .then(user => {
+                        res.status(httpStatus.OK).json({ message: "password Updated" });
+                    }).catch(err => {
+                        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "error updating password"});
+                    });
                 }
-                const newpassword = await User.EncrypytPassword(req.body.newPassword);
-                await User.update({_id: req.user._id}, {password: newpassword})
-                .then(user => {
-                    res.status(httpStatus.OK).json({ message: "password Updated" });
-                }).catch(err => {
-                    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "error updating password"});
-                });
                 // console.log(newpassword);
                 // else {
                 //     let token = jwt.sign({ data: user }, config.secret)
