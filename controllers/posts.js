@@ -3,7 +3,8 @@ const httpStatus = require("http-status-codes");
 const postSchema = require('../models/postModel');
 const User = require("../models/userModel");
 const cloudinary = require('cloudinary');
-let moment = require("moment");
+const moment = require("moment");
+const request = require("request");
 
 cloudinary.config({
     cloud_name: 'hassanharga',
@@ -88,14 +89,25 @@ module.exports = {
             const today = moment().startOf('day');
             const tomorrow = moment().add(1, 'days');
             const posts = await postSchema.find() // get all posts
-            // const posts = await postSchema.find({created : {$gte: today.toDate(), $lt: tomorrow.toDate()}}) // get all posts last 24 hours
+                // const posts = await postSchema.find({created : {$gte: today.toDate(), $lt: tomorrow.toDate()}}) // get all posts last 24 hours
                 .populate('user')
                 .sort({ created: -1 }); //{ user: req.user._id }
             const topPosts = await postSchema.find({ totalLikes: { $gte: 2 } }) // get all top posts
-            // const topPosts = await postSchema.find({ totalLikes: { $gte: 2 }, created : {$gte: today.toDate(), $lt: tomorrow.toDate()} }) // get all top posts last 24 hours
+                // const topPosts = await postSchema.find({ totalLikes: { $gte: 2 }, created : {$gte: today.toDate(), $lt: tomorrow.toDate()} }) // get all top posts last 24 hours
                 .populate('user')
                 .sort({ created: -1 });
             // console.log(posts);
+            const user = await User.findOne({ _id: req.user._id });
+            if (!user.city || !user.country) {
+                request('https://geoip-db.com/json/', { json: true }, async (err, res, body) => {
+                    await User.update({ _id: req.user._id },
+                        {
+                            city: body.city,
+                            country: body.country_name
+                        })
+                    // console.log(body);
+                })
+            }
             return res.status(httpStatus.OK).json({ message: 'all posts', posts, topPosts });
         } catch (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error Fetching Posts' });

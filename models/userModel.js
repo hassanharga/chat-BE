@@ -39,7 +39,10 @@ userSchema = mongoose.Schema({
       imgVersion: {type: String, default: ''},
       imgId: {type: String, default: ''},
     }
-  ]
+  ],
+  city: {type: String},
+  country: {type: String},
+  
 });
 
 userSchema.statics.EncrypytPassword = async (password) => {
