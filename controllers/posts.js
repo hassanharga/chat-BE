@@ -53,7 +53,7 @@ module.exports = {
                 });
         } else {
             cloudinary.uploader.upload(req.body.image, async (result) => {
-                console.log(result);
+                // console.log(result);
                 let reqBody = {
                     user: req.user._id,
                     username: req.user.username,

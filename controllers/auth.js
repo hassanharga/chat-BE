@@ -55,7 +55,7 @@ module.exports = {
     })
   },
   async loginUser(req, res) {
-    console.log(req.body);
+    // console.log(req.body);
     if (!req.body.user || !req.body.pass) {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'no empty fields allowed' });
     }

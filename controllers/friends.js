@@ -88,7 +88,7 @@ module.exports = {
     },
 
     async markNotification(req,res) {
-        console.log(req.body);
+        // console.log(req.body);
         if(!req.body.deletedValue) {
             await User.updateOne(
                 {
