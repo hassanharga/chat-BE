@@ -71,7 +71,9 @@ module.exports = {
                 res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'password is incorrect' });
               }
               else {
-                let token = jwt.sign({ data: user }, config.secret)
+                // console.log(user);
+                let token = jwt.sign({ data: {_id: user._id, username: user.username, email: user.email, password: user.password, picVersion: user.picVersion,
+                  picId: user.picId,} }, config.secret)
                 res.cookie("token", token);
                 res.status(httpStatus.OK).json({ message: 'Login sucessful', user, token });
               }

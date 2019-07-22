@@ -3,6 +3,8 @@ let moment = require('moment');
 let httpStatus = require('http-status-codes');
 let joi = require('joi');
 let bcrypt = require('bcryptjs');
+let jwt = require('jsonwebtoken');
+let config = require("../config/config");
 
 module.exports = {
     async getAllUsers(req, res) {
@@ -78,8 +80,17 @@ module.exports = {
                 } else {
                     const newpassword = await User.EncrypytPassword(req.body.newPassword);
                     await User.update({_id: req.user._id}, {password: newpassword})
-                    .then(user => {
-                        res.status(httpStatus.OK).json({ message: "password Updated" });
+                    .then(async (user) => {
+                        await User.findOne({ username: req.user.username })
+                        .then(result => {
+                            // console.log(result);
+                            let token = jwt.sign({ data: {_id: result._id, username: result.username, email: result.email, password: result.password, picVersion: result.picVersion,
+                                picId: result.picId,} }, config.secret)
+                            res.status(httpStatus.OK).json({ message: "password Updated", token });
+                        })
+                        .catch(err => {
+                            res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "error getting user"});
+                        })
                     }).catch(err => {
                         res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: "error updating password"});
                     });
