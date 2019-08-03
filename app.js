@@ -69,8 +69,8 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-let port = process.env.port || 8080;
-server.listen(port, () => {
-  console.log("server is listening at " + port);
+let port = process.env.port || 3000;
+server.listen(process.env.PORT || 8080, () => {
+  console.log("server is listening  ");
 });
 module.exports = app;
