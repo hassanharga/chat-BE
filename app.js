@@ -43,7 +43,9 @@ app.use(express.urlencoded({ extended: true , limit: '50mb'}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+app.get('/', function (req, res) {
+  res.send('welcome');
+});
 app.use('/api/chatapp', authRouter);
 app.use('/api/chatapp', postsRouter);
 app.use('/api/chatapp', userRouter);
