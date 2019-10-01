@@ -46,7 +46,8 @@ module.exports = {
         password: hash
       }
       User.create(body).then(user => {
-        let token = jwt.sign({ data: user }, config.secret);
+        let token = jwt.sign({data: {_id: user._id, username: user.username, email: user.email, picVersion: user.picVersion,
+          picId: user.picId,} }, config.secret);
         res.cookie("token", token);
         res.status(httpStatus.CREATED).json({ message: "user created successfully", user, token });
       }).catch(err => {
